@@ -1,0 +1,242 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{enumitem}
+\usepackage{verbatim} % for multiline comments
+
+\title{System Validation: Project}
+\author{J.M. Somers, C. Roest, D. van den Heuvel \& I.C.T.M Speek}
+
+\begin{document}
+\maketitle
+
+%----------------------------------------------------------------%
+
+\begin{comment}
+  \begin{abstract}
+  Your abstract.
+  \end{abstract}
+\end{comment}
+
+%----------------------------------------------------------------%
+
+\section{Introduction}
+\label{sec:introduction}
+\input{introduction}			% introduction.tex wordt hier geimporteerd
+% intoductie tot complexiteit brug systemen
+% wat moet de safety controller kunnen
+% onze taken
+% introductie tot parallele componenten en architectuur
+% verwijzen naar wat er in elke sectie gebeurt
+
+
+%----------------------------------------------------------------%
+\newpage
+\section{The model}
+\label{sec:model}
+\todo{Make own images}
+\input{model}
+% Give an introduction to the situational sketch and model system
+% Present the communication model
+% Argument design choices
+
+\subsection{Objects}
+\label{sec:objects}
+\todo{argument objects and their numbers}
+
+\begin{enumerate}
+
+\item{Control system} \\
+The system that gives the instructions to the safety controler for "when" actions have to be done. 
+\begin{itemize}
+\item{User}
+\item{Interface Controller} 
+\end{itemize}
+output: Unsafe actions to control the different elements of the bridge. \\
+actions: The user (or any other system behind the interface controler) determines when different actions should take place. \\
+input: status of the other subsystems. 
+
+\item{Safety controller} \\
+The system that checks if the given actions from the control system are safe according to the status of the different components. 
+\begin{itemize}
+\item{contains no other objects} 
+\end{itemize}
+output: safe actions to control the different elements of the bridge, is able to report status errors to the control system. \\
+actions: Check status of different objects. \\
+input: unsafe actions. 
+
+\item{Bridge-deck system}
+\begin{itemize}
+\item{3 sensors: Bridge is open}
+\item{3 sensors: Bridge is closed}
+\item{3 sensors: Bridge locking pins state}
+\item{2 locking pins}
+\item{Bridge break}\item{Bridge motor. This also indicates a state \{Stopped, Moving up, moving down, broken\}}
+\end{itemize}
+input: action requests for opening or closing the bridge. \\
+actions: control the right sequence of brigde-objects to open or close the bridge\\
+output: status of different components. 
+
+\item{Light system}
+\begin{itemize}
+\item{2 orange Lights for lane 1}
+\item{2 orange Lights for lane 2}
+\item{2 red Lights for lane 1}
+\item{2 red Lights for lane 2}
+\end{itemize}
+input: Status request of the lights, or action request to change the status of the lights \\
+actions: change the status of the lights\\
+output: Status of the different lights:\{on, off, broken\}.
+ 
+
+\item{barier system}
+\begin{itemize}
+\item{inner barier 1}
+\item{outer barier 1}
+\item{2 sensors for if inner barier of lane 1 is open}
+\item{2 sensors for if outer barier of lane 1 is open}
+\item{2 sensors for if inner barier of lane 1 is closed}
+\item{2 sensors for if outer barier of lane 1 is closed}
+\item{inner barier 2}
+\item{outer barier 2}
+\item{2 sensors for if inner barier of lane 2 is open}
+\item{2 sensors for if outer barier of lane 2 is open}
+\item{2 sensors for if inner barier of lane 2 is closed}
+\item{2 sensors for if outer barier of lane 2 is closed}
+\end{itemize}
+input: actions to control the different objects of the barier system. \\
+actions: change state of objects of the barier system. \\
+output: status of objects of the barier system. 
+
+%----------------------------------------------------------------%
+
+\end{enumerate}
+
+\subsection{Definitions}
+\label{sec:definitions}
+
+\begin{enumerate}
+\item{The bridge is open if the 2 out of 3 sensors indicate that the bridge is open.}
+\item{The bridge is closed if the 2 out of 3 sensors indicate that the bridge is closed.}
+\item{The bridge is in undefined state when the bridge is not open and not closed.}
+\item{When the input of the safety controller issues to open the bridge, the bridge is going to be opened in precise order discribed in \ref{openBridge}}
+\item{When the input of the safety controller issues to open the bridge, the bridge is going to be opened in precise order discribed in \ref{closeBridge}}
+\item{Traffic flow is hampered when the bridge is in a state where both cars and vessels cannot cross.}
+\item{The barriers that the cars will encounter first will be called "first barriers"}
+\item{The barriers that the cars will encounter last will be called "last barriers"}
+
+\end{enumerate}
+
+
+
+%----------------------------------------------------------------%
+
+\section{Requirements}
+\label{sec:requirements}
+
+Case: bridge is going to be opened
+\label{openBridge}
+\begin{enumerate}
+
+\item{The red lights may not go on if the yelow lights are not already on.}
+\item{The barriers may not close if the red lights are not on.}
+\item{\label{item:traffic}If there is traffic on the bridge, the bariers may not close.}
+%\item{The bridge may not open if the barriers are not closed.}
+\item{The last barriers can close if and only if the first barriers are closed.}
+\item{The bridge may not open if not all barriers are closed.}
+\item{The bridge may not open if the locking pins are engaged.}
+
+\end{enumerate}
+
+
+\noindent Case: bridge is going to be closed
+\label{closeBridge}
+\begin{enumerate}[resume]
+
+\item{The barriers may not open if the bridge is not closed.}
+\item{The red lights may not go out when the bariers are not up.}
+\item{The locking pins may not engage if the bridge is not closed.}
+
+%\item{The bridge may not close if the ship has not completely passed the bridge.}
+
+
+\end{enumerate}
+
+\noindent General Requirements
+
+\begin{enumerate}[resume]
+
+\item{The break must be applied if the bridge is open and is not going to close}
+\item{The break must be applied if the bridge is closed and is not going to open}
+\item{If the motor is broken, the brake must be aplied.}
+%\item{Road traffic may not cross the bridge if the locking pins are not engaged.}
+\item{The flow of the traffic may only be hampered if this cannot be avoided.}
+
+\end{enumerate}
+
+\newpage
+
+
+
+%----------------------------------------------------------------%
+
+\section{Questions}
+
+\begin{enumerate}
+
+\item{Is de break "smart" en kan zijn status worden opgevraagd?}
+
+\item{Does the bridge need a safety break and a safety motor?}
+
+\item{Zijn er genoeg paralelle componenten in ons eerste ontwerp?}
+
+\item{Moet de motor, rem en locking pins appart bediend kunnen worden?}
+
+\item{Als een onderdeel van de brug (rem, locking pin) kapot gaat, moet de brug dan direct naar de lichten kunnen sturen dat ze aan moeten.}
+
+\end{enumerate}
+
+
+%----------------------------------------------------------------%
+
+\section{Proposals}
+\label{sec:proposals}
+
+\begin{enumerate}
+\item{Add one sensor for each light to detect if the lights are working in order to meet the requirement: bariers may not close if lights are not on.}
+
+\item{Add a sensor to detect if there is traffic on the bridge. (To meet requirement \ref{item:traffic})}
+
+\item{Add a third sensor for each of the following sensors, in order to meet the requirement: "the traffic may not be hampered unnecessary".Because the the system can not make a desicion if one sensor gives false information and one sensor gives valid information.}
+\begin{itemize}
+\item{2 sensors: Bridge is open}
+\item{2 sensors: Bridge is closed}
+\item{2 sensors: Bridge locking pins state}
+\item{2 locking pins}
+\end{itemize}
+\end{enumerate}
+
+
+
+%----------------------------------------------------------------%
+
+\section{ToDo}
+
+Stelling: een bood kan besluiten dat hij er inneens toch niet onderdoor wil, dus vanaf elke volgende state in het systeem moet de vorrige state berijkt kunnen worden. 
+Andere case: er kan ook plotseling een tweede boot aankomen als de brug bezig is met sluiten. 
+Het opstellen van je systeem op deze manier voorkomt waarschijnlijk ook deadlock. 
+
+\todo[inline]{Zo voeg je commentaar toe}
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,16 @@
+% intoductie tot complexiteit brug systemen
+% wat moet de safety controller kunnen
+% korte volgorde van alle handelingen
+% onze taken
+% introductie tot parallele componenten en architectuur
+% verwijzen naar wat er in elke sectie gebeurt
+%
+The Dutch governmental organisation Rijkswaterstaat is responsible for the core infrastructure of the Netherlands. Active components in the infrastructure such as bridges and sluices require safety control layers as indicated by safety regulations and previous experiences in designing these. These layers must ensure the absence of unsafe situations at all times. They should however not unnecessarily impact the flow of trafic in a negative way. 
+
+In this report we will design a safety controller for a bridge system. This safety controller will either validate or reject the input from an interface controller operated by the user. To ensure no unsafe situations will ever occur, a worst case scenario in which the emergency contols are operated is assumed. The user can  control all objects as listed in Section \ref{sec:objects} in the system independently while the emergency controls are enabled. 
+
+The model depicted in figure \ref{fig:model} displays the different components of the system. The safety controller is in charge of validation of the instuctions passed on by the interface controller. Depending on the input from a list of sensors, the safety controller can sequentially enable the pre-sign lights, the stop-sign lights, close the barrier for incoming traffic and close the barrier for outgoing traffic. If this situation is validated as safe as defined in Section \ref{sec:definitions} the safety controller will allow the motor to raise the bridge so that boats can pass. The opposite counts for lowering the bridge to let traffic pass. Within this model we assume that external features such as traffic will behave according to traffic rules and boat traffic will be accounted for by the bridge operator through the interface controller. 
+
+For this project we will describe the global requirements of the system and indentify the relevant interactions. By grouping the objects into parallel components we will describe an architecture of the structure of the system. The global requirements can then further be translated in terms of these interactions. The system behavior can then be described and verified using mCRL2. 
+
+In this report we will design a safety controller for a bridge system. The model of the system, its objects and concurrent definitions are introduced in Section \ref{sec:model}. Section \ref{sec:requirements} introduces the requirements. 
